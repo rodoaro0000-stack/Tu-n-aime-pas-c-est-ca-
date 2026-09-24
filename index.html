@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Question</title>
+<style>
+  :root{
+    --bg:#ffe4e6; --card:#fff; --text:#1a1a1a; --red:#ff4d5e; --gray:#e5e5e5; --gray-text:#333;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){ --bg:#2a1418; --card:#1e1e1e; --text:#f0f0f0; --gray:#3a3a3a; --gray-text:#ddd; }
+  }
+  html,body{height:100%;margin:0;}
+  body{
+    background:var(--bg); color:var(--text);
+    font-family:-apple-system,Segoe UI,Roboto,sans-serif;
+    display:flex; align-items:center; justify-content:center;
+    position:relative; overflow:hidden;
+  }
+  .card{
+    background:var(--card); border-radius:24px; padding:40px 32px;
+    text-align:center; box-shadow:0 10px 30px rgba(0,0,0,.15);
+    max-width:340px; width:90%;
+  }
+  h1{ color:var(--red); font-size:1.5rem; margin:0 0 8px; }
+  .btns{ display:flex; gap:16px; justify-content:center; margin-top:24px; position:relative; height:56px;}
+  button{
+    border:none; border-radius:12px; padding:14px 28px;
+    font-size:1rem; font-weight:600; cursor:pointer;
+  }
+  .solid{ background:var(--red); color:#fff; }
+  .plain{ background:var(--gray); color:var(--gray-text); }
+  .dodge{ position:fixed; transition:transform .15s ease; }
+  #final{ font-size:1.4rem; font-weight:700; color:var(--red); }
+</style>
+</head>
+<body>
+  <div class="card" id="card"></div>
+
+<script>
+  const card = document.getElementById('card');
+
+  function screen1(){
+    card.innerHTML = `
+      <h1>Est-ce que tu m'aime vraiment ?</h1>
+      <div class="btns">
+        <button id="yes" class="solid dodge">Oui</button>
+        <button id="no" class="plain">Non</button>
+      </div>`;
+    setupDodge(document.getElementById('yes'), document.getElementById('no'));
+    document.getElementById('no').addEventListener('click', screen2);
+  }
+
+  function screen2(){
+    card.innerHTML = `
+      <h1>Tu ne m'aimes vraiment pas ?</h1>
+      <div class="btns">
+        <button id="yes2" class="solid">Oui</button>
+        <button id="no2" class="plain dodge">Non</button>
+      </div>`;
+    setupDodge(document.getElementById('no2'), document.getElementById('yes2'));
+    document.getElementById('yes2').addEventListener('click', final);
+  }
+
+  function final(){
+    card.innerHTML = `<div id="final">Ho ano amzay ko ny tay ee🫤</div>`;
+  }
+
+  // rend `dodger` impossible à cliquer en le téléportant au survol/touch,
+  // positionné au départ à côté de `anchor`
+  function setupDodge(dodger, anchor){
+    function move(){
+      const w = dodger.offsetWidth, h = dodger.offsetHeight;
+      const maxX = window.innerWidth - w - 12;
+      const maxY = window.innerHeight - h - 12;
+      const x = Math.max(12, Math.random() * maxX);
+      const y = Math.max(12, Math.random() * maxY);
+      dodger.style.left = x + 'px';
+      dodger.style.top = y + 'px';
+    }
+    dodger.addEventListener('mouseenter', move);
+    dodger.addEventListener('touchstart', (e) => { e.preventDefault(); move(); }, {passive:false});
+
+    requestAnimationFrame(() => {
+      const rect = anchor.getBoundingClientRect();
+      const dRect = dodger.getBoundingClientRect();
+      const sameLeft = dRect.left === rect.right; // no-op just to force reflow
+      dodger.style.left = (rect.right + 16) + 'px';
+      dodger.style.top = rect.top + 'px';
+    });
+  }
+
+  screen1();
+</script>
+</body>
+  </html>
+  
